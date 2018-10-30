@@ -1,0 +1,97 @@
+body {
+
+
+     background: url(internship.jpg);
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+
+     color: white;
+
+
+ }
+
+ #flexBox {
+
+     width: 100%;
+     height: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+
+ }
+
+ #mainContainer {
+
+     position: relative;
+     top: 5%;
+     width: 35%;
+     height: 60%;
+     min-width: 300px;
+     text-align: center;
+
+ }
+
+ a {
+
+     color: white;
+     cursor: pointer;
+ }
+
+
+ #mainContainer h1 {
+
+
+     font-size: 65px;
+ }
+
+
+ #signUpForm {
+
+     display: none;
+
+ }
+
+ form {
+
+     margin: 20px;
+ }
+
+ .form-check {
+
+     margin-bottom: 10px;
+ }
+
+ input:focus {
+
+     outline: none;
+ }
+
+
+ #showSignInForm {
+
+     display: none;
+
+ }
+
+ .toggleForms {
+
+     font-weight: bold;
+ }
+
+
+ #alertModal {
+
+     color: #434647;
+ }
+
+
+ #alert {
+
+
+     font-size: 20px;
+     text-shadow: 1px 1px 2px #000000;
+
+ }
+ 
