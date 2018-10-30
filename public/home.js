@@ -1,13 +1,8 @@
 $('.toggleForms').click(function() {
-
     $("#signUpForm").toggle();
     $("#signInForm").toggle();
-
     $("#showSignUpForm").toggle();
-     $("#showSignInForm").toggle();
-
-
-
+    $("#showSignInForm").toggle();
 })
 
 
@@ -17,7 +12,6 @@ const modalText = document.getElementById("modalText");
 const modalTitle = document.getElementById("modalTitle");
 const modalConfirm = document.getElementById("confirm");
 const modalCancel = document.getElementById("cancel");
-
 
 modalConfirm.onclick = function() {
     const name = document.getElementById("signUpName").value;
@@ -55,8 +49,6 @@ modalConfirm.onclick = function() {
           alert('Cannot log in, please try again later')
         }
       });
-
-
     },
     error: function (response, textStatus, xhr) {
       if(response.status == 400) {
@@ -76,7 +68,6 @@ signUpButton.onclick = function(e) {
     e.preventDefault();
 
     // reset the modal buttons to default (in case they were changed by the error modal if statement)
-
     modalCancel.innerHTML="Cancel";
     modalConfirm.style.display = "initial";
 
@@ -90,38 +81,29 @@ signUpButton.onclick = function(e) {
     if(!studentid) {
         warningText += "ID is required<br>"
     }
-
     if(!name) {
         warningText += "Name is required<br>";
     }
-
     if(!department) {
         warningText += "Department is required<br>";
     }
-
     if(!password) {
         warningText += "Password is required<br>";
     }
-
     if(password.length < 6) {
       warningText += "Password should be at least 6 characters long<br>"
     }
-
     if(warningText != "") {
         // change html so that there is only one dismiss button when prompting for missing fields
-
         modalCancel.innerHTML="Dismiss";
         modalConfirm.style.display = "none";
 
         modalTitle.innerHTML = "Error";
         modalText.innerHTML = "There were some errors in your form:<br>" + warningText;
-
+        
     } else {
-
         modalTitle.innerHTML = "Please confirm your details";
         modalText.innerHTML = `Your student ID is: ${studentid}<br>Your name is: ${name}<br>You are in the Department of ${department}`;
-
-
     }
 
 }
