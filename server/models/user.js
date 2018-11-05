@@ -89,11 +89,11 @@ UserSchema.statics.findByToken = function(token) { // schema.methods defines met
 }
 
 // method to search Users database via email
-UserSchema.statics.findByCredentials = function(email, password) {
+UserSchema.statics.findByCredentials = function(studentid, password) {
   let User = this;
 
   return User.findOne({
-    'email': email
+    'studentid': studentid
   }).then((user) => {
     if(!user) {
       return Promise.reject(); // this will trigger catch case in server.js

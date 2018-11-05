@@ -1,3 +1,28 @@
+
+
+//logout button
+$("#logOut").on("click", function(event) {
+  event.preventDefault();
+
+  let token = localStorage.getItem("x-auth");
+
+  $.ajax({
+    url: "/logout",
+    method: 'DELETE',
+    beforeSend: function(request) {
+      request.setRequestHeader("x-auth", token);
+    },
+  }).then((response, textStatus, xhr) => {
+    localStorage.removeItem('x-auth');
+    localStorage.removeItem('studentid');
+
+    window.location = `/`;
+
+  }).catch((e) => {
+    console.log(e)
+  })
+})
+
 // set pdfMake font
 pdfMake.fonts = {
        SimHei: {

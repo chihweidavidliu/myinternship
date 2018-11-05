@@ -43,30 +43,44 @@ app.post("/signup", urlencodedParser, (req, res, next) => {
   })
 })
 
-app.post("/loggedin", authenticate, (req, res) => {
-  let token = req.header('x-auth');
-  res.redirect(`/profile/${token}`)
-})
-
-app.get("/profile/:token", (req, res) => {
-  let token = req.params.token;
-
-  User.findByToken(token).then((user) => {
-    if(!user) {
-      return Promise.reject();
-    }
-
-    // check that there are choices - if so, pass them to the view
+// app.post("/loggedin", authenticate, (req, res) => {
+//   let token = req.header('x-auth');
+//   res.redirect(`/profile/${token}`)
+// })
 
 
+// signin
+app.post("/signin", urlencodedParser, (req, res) => {
+  let body = _.pick(req.body, ['studentid', 'password']);
 
-    // find user by token and get their infor to pass into render()
-    res.render('loggedIn.hbs', {
-      name: user.name,
-      department: user.department,
-      studentid: user.studentid,
+  User.findByCredentials(body.studentid, body.password).then((user) => {
+    return user.generateAuthToken().then((token) => {
+      res.header({'x-auth': token, studentid: body.studentid}).send(user);
     })
   }).catch((e) => {
-    res.status(401).send();
+    res.status(400).send();
+  })
+});
+
+
+// access profile
+app.get("/profile/:token", authenticate, (req, res) => {
+
+
+    // check that there are choices - if so, pass them to the view
+    res.render('loggedIn.hbs', {
+      name: req.user.name,
+      department: req.user.department,
+      studentid: req.user.studentid,
+    })
+
+})
+
+// logout
+app.delete('/logout', authenticate, (req, res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }).catch((e) => {
+    res.status(400).send();
   })
 })

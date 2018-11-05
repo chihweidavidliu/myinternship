@@ -1,7 +1,7 @@
 let {User} = require('./../models/user.js');
 
 let authenticate = (req, res, next) => { // authentication middleware
-  let token = req.header('x-auth');
+  let token = req.header('x-auth') || req.params.token;
 
   User.findByToken(token).then((user) => {
     if(!user) {
@@ -12,7 +12,7 @@ let authenticate = (req, res, next) => { // authentication middleware
     req.token = token;
     next();
   }).catch((e) => {
-    res.status(401).send();
+    res.redirect("/"); // go home if authentification fails
   })
 }
 

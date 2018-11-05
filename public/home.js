@@ -1,3 +1,6 @@
+
+
+
 $('.toggleForms').click(function() {
     $("#signUpForm").toggle();
     $("#signInForm").toggle();
@@ -12,6 +15,42 @@ const modalText = document.getElementById("modalText");
 const modalTitle = document.getElementById("modalTitle");
 const modalConfirm = document.getElementById("confirm");
 const modalCancel = document.getElementById("cancel");
+const signInButton = document.getElementById("signInButton");
+
+
+signInButton.onclick = function(event) {
+  event.preventDefault();
+
+  const studentid = document.getElementById("signInId").value;
+  const password = document.getElementById("signInPassword").value;
+
+  $.ajax({
+    url: '/signin',
+    method: 'POST',
+    data: {
+      studentid: studentid,
+      password: password,
+    },
+    success: function (response, textStatus, xhr) {
+      console.log(response);
+
+      let auth = xhr.getResponseHeader('x-auth');
+      let id = xhr.getResponseHeader('studentid');
+
+      localStorage.setItem('x-auth', auth);
+      localStorage.setItem('studentid', id);
+
+      window.location = `/profile/${auth}`
+
+    },
+    error: function (response, textStatus, xhr) {
+      if(response.status == 400) {
+        alert("Sign in failed, please try again later.")
+      }
+    }
+  });
+
+}
 
 modalConfirm.onclick = function() {
     const name = document.getElementById("signUpName").value;
@@ -38,20 +77,7 @@ modalConfirm.onclick = function() {
         localStorage.setItem('studentid', id);
 
         // redirect to loggedin pages
-
         window.location = `/profile/${auth}`
-
-      //   $.ajax({
-      //    url: "/loggedin",
-      //    type: "POST",
-      //    beforeSend: function(xhr){xhr.setRequestHeader('x-auth', auth);}, // send token with request
-      //    success: function(page) {
-      //      console.log('redirecting');
-      //   },
-      //   fail: function() {
-      //     alert('Cannot log in, please try again later')
-      //   }
-      // });
     },
     error: function (response, textStatus, xhr) {
       if(response.status == 400) {
