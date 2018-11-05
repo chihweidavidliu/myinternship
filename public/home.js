@@ -38,17 +38,20 @@ modalConfirm.onclick = function() {
         localStorage.setItem('studentid', id);
 
         // redirect to loggedin pages
-        $.ajax({
-         url: "/loggedin",
-         type: "POST",
-         beforeSend: function(xhr){xhr.setRequestHeader('x-auth', auth);}, // send token with request
-         success: function(page) {
-           console.log('redirecting');
-        },
-        fail: function() {
-          alert('Cannot log in, please try again later')
-        }
-      });
+
+        window.location = `/profile/${auth}`
+
+      //   $.ajax({
+      //    url: "/loggedin",
+      //    type: "POST",
+      //    beforeSend: function(xhr){xhr.setRequestHeader('x-auth', auth);}, // send token with request
+      //    success: function(page) {
+      //      console.log('redirecting');
+      //   },
+      //   fail: function() {
+      //     alert('Cannot log in, please try again later')
+      //   }
+      // });
     },
     error: function (response, textStatus, xhr) {
       if(response.status == 400) {
@@ -100,7 +103,7 @@ signUpButton.onclick = function(e) {
 
         modalTitle.innerHTML = "Error";
         modalText.innerHTML = "There were some errors in your form:<br>" + warningText;
-        
+
     } else {
         modalTitle.innerHTML = "Please confirm your details";
         modalText.innerHTML = `Your student ID is: ${studentid}<br>Your name is: ${name}<br>You are in the Department of ${department}`;

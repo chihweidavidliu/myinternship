@@ -44,7 +44,29 @@ app.post("/signup", urlencodedParser, (req, res, next) => {
 })
 
 app.post("/loggedin", authenticate, (req, res) => {
-  console.log(`token: ${req.header('x-auth')}`)
-  console.log(`name from database: ${req.user.name}`)
-  res.render(`loggedIn.hbs`);
+  let token = req.header('x-auth');
+  res.redirect(`/profile/${token}`)
+})
+
+app.get("/profile/:token", (req, res) => {
+  let token = req.params.token;
+
+  User.findByToken(token).then((user) => {
+    if(!user) {
+      return Promise.reject();
+    }
+
+    // check that there are choices - if so, pass them to the view
+
+
+
+    // find user by token and get their infor to pass into render()
+    res.render('loggedIn.hbs', {
+      name: user.name,
+      department: user.department,
+      studentid: user.studentid,
+    })
+  }).catch((e) => {
+    res.status(401).send();
+  })
 })
