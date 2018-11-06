@@ -75,3 +75,21 @@ describe("POST /signup", () => {
       .end(done)
   })
 })
+
+describe("DELETE /logout", () => {
+  it("should remove user token on logout", (done) => {
+    request(app)
+      .delete("/logout")
+      .set('x-auth', users[1].tokens[0].token)
+      .expect(200)
+      .end((err, res) => {
+        if(err) {
+          return done(err)
+        }
+        User.findById(users[1]._id).then((user) => {
+          expect(user.tokens.length).toBe(0);
+          done();
+        }).catch((err) => done(err))
+      })
+  })
+})
