@@ -84,3 +84,7 @@ app.delete('/logout', authenticate, (req, res) => {
     res.status(400).send();
   })
 })
+
+module.exports = {
+  app: app
+}
