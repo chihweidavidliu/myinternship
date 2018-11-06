@@ -102,31 +102,16 @@ const department = document.getElementById("department").innerText;
 // loop through the choices and for each one, check if it matches a list item in the options list. If so, delete the item in the options list;
 
 choicesList.forEach(item => {
-
    optionsList.forEach(item2 => {
-
-
        if(item.innerText == item2.innerText) {
-
            item2.parentNode.removeChild(item2);
-
-
        }
-
-
    })
-
-
 })
 
 
-
-
 // submit button functionality
-
-
 $("#submit").click(function(e) {
-
 
     // reset modal buttons to default
     $("#confirm").show();
@@ -141,20 +126,18 @@ $("#submit").click(function(e) {
         $(".modal-body").html("You have chosen not to apply for any internships, are you sure?");
 
         confirmButton.onclick = function() {
-
-
             // on confirm - push a value of 'none' to the database
+
+            let token = localStorage.getItem("x-auth")
 
              $.ajax({
               type: "POST",
-              url: "databaseUpdater.php",
+              url: `/profile/${token}`,
               data: { choices: "None"},
               success: function() {
 
                   $(".modal-body").html("Choices successfully submitted!");
-
                   //alter modal header
-
                   $("#exampleModalLabel").html("Success!")
                   // alter modal buttons
                   $("#confirm").hide();
@@ -162,8 +145,6 @@ $("#submit").click(function(e) {
                 },
 
               error: function() {$(".modal-body").html("An error occurred, please try again later.")}
-
-
              });
 
             // print out pdf confirmation of their choice
@@ -214,43 +195,32 @@ $("#submit").click(function(e) {
 
         // iterate through the list items and push the text to the choices array
          $('#sortable2').children().each(function() {
-
             choices.push($(this).text());
-
         });
 
         let text = "You have chosen the following companies: <br>";
 
-
         // iterate through the choices array to add the companies to the modal alert text
-
         $(choices).each(function(index, value) {
-
             text += `${index + 1}. ${value}<br>`;
-
         });
 
 
         // display list of choices in the modal
-
         $(".modal-body").html(text);
 
-
-
         let choicesStringified = JSON.stringify(choices);
-
         // on confirm, update the database with the choices
 
 
-
         confirmButton.onclick = function() { //need to use onclick rather than jquery click to prevent multiple printing when user modifies their choice just before confirm
-
-
             // post the data to the server
+
+            let token = localStorage.getItem("x-auth")
 
              $.ajax({
               type: "POST",
-              url: "databaseUpdater.php",
+              url: `/profile/${token}`,
               data: { choices: choicesStringified},
               success: function() {
 

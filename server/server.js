@@ -79,6 +79,23 @@ app.delete('/logout', authenticate, (req, res) => {
   })
 })
 
+
+// save company choices
+app.post("/profile/:token", authenticate, urlencodedParser, (req, res) => {
+  console.log(req.body.choices)
+  let choices = req.body.choices;
+  // save company choices
+
+  User.findOneAndUpdate({
+    _id: req.user._id
+  }, {$set: {choices: choices}}, {new: true}).then((choices) => {
+    res.status(200).send();
+  }).catch((err) => {
+    res.status(400).send();
+  })
+})
+
+
 module.exports = {
   app: app
 }

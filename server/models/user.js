@@ -28,7 +28,9 @@ let UserSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-  choices: [],
+  choices: {
+    require: false,
+  },
   tokens: [{
       access: {
         type: String,

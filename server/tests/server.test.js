@@ -77,7 +77,7 @@ describe("POST /signup", () => {
 })
 
 describe("DELETE /logout", () => {
-  it("should remove user token on logout", (done) => {
+  it("should remove user token from database on logout", (done) => {
     request(app)
       .delete("/logout")
       .set('x-auth', users[1].tokens[0].token)
@@ -91,5 +91,14 @@ describe("DELETE /logout", () => {
           done();
         }).catch((err) => done(err))
       })
+  })
+})
+
+describe("GET /profile/:token", () => {
+  it("should render profile page", (done) => {
+    request(app)
+      .get(`/profile/${users[1].tokens[0].token}`)
+      .expect(200)
+      .end(done)
   })
 })
