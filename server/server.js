@@ -43,11 +43,6 @@ app.post("/signup", urlencodedParser, (req, res, next) => {
   })
 })
 
-// app.post("/loggedin", authenticate, (req, res) => {
-//   let token = req.header('x-auth');
-//   res.redirect(`/profile/${token}`)
-// })
-
 
 // signin
 app.post("/signin", urlencodedParser, (req, res) => {
@@ -65,7 +60,6 @@ app.post("/signin", urlencodedParser, (req, res) => {
 
 // access profile
 app.get("/profile/:token", authenticate, (req, res) => {
-
 
     // check that there are choices - if so, pass them to the view
     res.render('loggedIn.hbs', {
