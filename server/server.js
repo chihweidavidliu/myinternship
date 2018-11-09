@@ -1,7 +1,10 @@
 require('./config/config.js'); // set up environment variables and ports/databsaes
 const {mongoose} = require('./database/mongoose.js');
 const {User} = require('./models/user');
+const {Admin} = require('./models/admin');
+
 const {authenticate} = require('./middleware/authenticate.js');
+const {authenticateAdmin} = require('./middleware/authenticateAdmin.js');
 
 const hbs = require('hbs');
 const {ObjectID} = require('mongodb'); // import ObjectID from mongodb for id validation methods
@@ -59,13 +62,24 @@ app.post("/signin", urlencodedParser, (req, res) => {
 
 
 // access profile
-app.get("/profile/:token", authenticate, (req, res) => {
+app.get("/profile/:token", authenticate, (req, res, next) => {
 
-    // check that there are choices - if so, pass them to the view
+    let choicesList = "";
+    let choices = req.user.choices; // get user choices from req.user object (returned from authentification middleware)
+
+    if(choices != "None") { // if there are choices, turn them into list items to be passed to handlebars
+      let choicesArray = JSON.parse(choices);
+      choicesArray.forEach(choice => {
+        console.log(choice)
+        choicesList += `<li>${choice}</li>`
+      })
+    }
+
     res.render('loggedIn.hbs', {
       name: req.user.name,
       department: req.user.department,
       studentid: req.user.studentid,
+      choices: choicesList,
     })
 
 })
@@ -95,6 +109,12 @@ app.post("/profile/:token", authenticate, urlencodedParser, (req, res) => {
   })
 })
 
+
+// admin homepage
+
+app.get("/admin", urlencodedParser, (req, res) => {
+  res.render("admin.hbs");
+})
 
 module.exports = {
   app: app

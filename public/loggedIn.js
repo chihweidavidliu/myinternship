@@ -209,9 +209,12 @@ $("#submit").click(function(e) {
         // display list of choices in the modal
         $(".modal-body").html(text);
 
-        let choicesStringified = JSON.stringify(choices);
+        console.log(choices)
+
+        let choicesStringified = JSON.stringify(choices).trim();
         // on confirm, update the database with the choices
 
+        console.log(choicesStringified)
 
         confirmButton.onclick = function() { //need to use onclick rather than jquery click to prevent multiple printing when user modifies their choice just before confirm
             // post the data to the server

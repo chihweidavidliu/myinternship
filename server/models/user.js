@@ -29,6 +29,7 @@ let UserSchema = new mongoose.Schema({
     require: true,
   },
   choices: {
+    type: String,
     require: false,
   },
   tokens: [{
@@ -90,7 +91,7 @@ UserSchema.statics.findByToken = function(token) { // schema.methods defines met
 
 }
 
-// method to search Users database via email
+
 UserSchema.statics.findByCredentials = function(studentid, password) {
   let User = this;
 
