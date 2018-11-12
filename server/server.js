@@ -70,7 +70,6 @@ app.get("/profile/:token", authenticate, (req, res, next) => {
     if(choices != "None") { // if there are choices, turn them into list items to be passed to handlebars
       let choicesArray = JSON.parse(choices);
       choicesArray.forEach(choice => {
-        console.log(choice)
         choicesList += `<li>${choice}</li>`
       })
     }
@@ -114,6 +113,27 @@ app.post("/profile/:token", authenticate, urlencodedParser, (req, res) => {
 
 app.get("/admin", urlencodedParser, (req, res) => {
   res.render("admin.hbs");
+})
+
+// admin signin
+app.post("/admin", urlencodedParser, (req, res) => {
+  let body = _.pick(req.body, ['username', 'password']);
+
+  Admin.findByCredentials(body.username, body.password).then((admin) => {
+    return admin.generateAuthToken().then((token) => {
+      res.header({'admin-auth': token, username: body.username}).send();
+    })
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
+
+
+// show logged in page for admin
+app.get("/admin/:token", authenticateAdmin, (req, res, next) => {
+
+    //
+    res.render('loggedInAdmin.hbs')
 })
 
 module.exports = {

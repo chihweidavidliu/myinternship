@@ -14,12 +14,6 @@ let AdminSchema = new mongoose.Schema({
     minlength: 1,
     unique: true, // stops email duplicates occuring in the database
     },
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 1,
-    },
   password: {
       type: String,
       require: true,
@@ -84,21 +78,24 @@ AdminSchema.statics.findByToken = function(token) { // schema.methods defines me
 AdminSchema.statics.findByCredentials = function(username, password) {
   let Admin = this;
 
+  console.log(username)
+  console.log(password)
+
   return Admin.findOne({
-    'username': username
+    "username": username
   }).then((admin) => {
     if(!admin) {
+      console.log("Can't find admin")
       return Promise.reject(); // this will trigger catch case in server.js
     }
-
     return new Promise((resolve, reject) => {
-      bcrypt.compare(password, admin.password, (err, res) => {
-        if(res == true) {
-          resolve(admin)
-        } else {
-          reject();
-        }
-      })
+      if(admin.password == password) {
+        console.log("Admin found")
+        resolve(admin)
+      } else {
+        console.log("Password does not match")
+        reject()
+      }
     })
   })
 }
@@ -110,21 +107,21 @@ AdminSchema.methods.toJSON = function() { // redefine toJSON method used when us
   return _.pick(adminObject, ['_id', 'username']);
 }
 
-//mongoose middleware (use the .pre() method on schema to set middleware)
-AdminSchema.pre('save', function(next) { // this will hash all passwords every time a password is set or modified
-  let admin = this;
-
-  if(admin.isModified('password')) {
-    bcrypt.genSalt(10, (err, salt) => { //genSalt(number of rounds of encryption, callback with err and salt parameters)
-      bcrypt.hash(admin.password, salt, (err, hash) => { //hash takes 3 arguments, thing to be hashed, the salt to be used and a callback
-        admin.password = hash;
-        next(); // need to call next for middleware to move on
-      })
-    })
-  } else {
-    next();
-  }
-})
+// //mongoose middleware (use the .pre() method on schema to set middleware)
+// AdminSchema.pre('save', function(next) { // this will hash all passwords every time a password is set or modified
+//   let admin = this;
+//
+//   if(admin.isModified('password')) {
+//     bcrypt.genSalt(10, (err, salt) => { //genSalt(number of rounds of encryption, callback with err and salt parameters)
+//       bcrypt.hash(admin.password, salt, (err, hash) => { //hash takes 3 arguments, thing to be hashed, the salt to be used and a callback
+//         admin.password = hash;
+//         next(); // need to call next for middleware to move on
+//       })
+//     })
+//   } else {
+//     next();
+//   }
+// })
 
 
 // Admin models

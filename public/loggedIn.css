@@ -192,3 +192,7 @@ h3 {
 
     outline: none;
 }
+
+#logOut {
+  cursor: pointer;
+}

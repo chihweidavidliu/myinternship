@@ -1,7 +1,7 @@
 let {Admin} = require('./../models/admin.js');
 
 let authenticate = (req, res, next) => { // authentication middleware
-  let token = req.header('x-auth') || req.params.token;
+  let token = req.header('admin-auth') || req.params.token;
 
   Admin.findByToken(token).then((admin) => {
     if(!admin) {
