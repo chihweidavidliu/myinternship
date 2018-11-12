@@ -16,10 +16,33 @@ const companyChoices = document.getElementById("companyChoices");
     $("#displayStudentChoices").toggle();
      $("#displayCompanyChoices").toggle();
 
-
-
 })
 
+
+// logout button
+
+$("#logOut").click(function(event) {
+  event.preventDefault();
+
+  let token = localStorage.getItem("admin-auth");
+
+  $.ajax({
+    url: '/admin/logout',
+    method: 'DELETE',
+    beforeSend: function(request) {
+      request.setRequestHeader("admin-auth", token);
+    },
+  }).then((response) => {
+    localStorage.removeItem('admin-auth');
+    localStorage.removeItem('username');
+
+    window.location = `/admin`;
+  }).catch((e) => {
+    console.log(e);
+    alert("Logout failed, please try again later");
+  })
+
+})
 
 
 // change contenteditable enter functionality

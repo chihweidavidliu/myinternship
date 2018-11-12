@@ -107,23 +107,6 @@ AdminSchema.methods.toJSON = function() { // redefine toJSON method used when us
   return _.pick(adminObject, ['_id', 'username']);
 }
 
-// //mongoose middleware (use the .pre() method on schema to set middleware)
-// AdminSchema.pre('save', function(next) { // this will hash all passwords every time a password is set or modified
-//   let admin = this;
-//
-//   if(admin.isModified('password')) {
-//     bcrypt.genSalt(10, (err, salt) => { //genSalt(number of rounds of encryption, callback with err and salt parameters)
-//       bcrypt.hash(admin.password, salt, (err, hash) => { //hash takes 3 arguments, thing to be hashed, the salt to be used and a callback
-//         admin.password = hash;
-//         next(); // need to call next for middleware to move on
-//       })
-//     })
-//   } else {
-//     next();
-//   }
-// })
-
-
 // Admin models
 let Admin = mongoose.model('Admin', AdminSchema);
 

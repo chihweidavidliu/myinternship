@@ -132,10 +132,21 @@ app.post("/admin", urlencodedParser, (req, res) => {
 // show logged in page for admin
 app.get("/admin/:token", authenticateAdmin, (req, res, next) => {
 
-    //
+    // sort out company choices and student choices grids - take data from mongodb
+
     res.render('loggedInAdmin.hbs')
 })
 
+//admin logout
+app.delete('/admin/logout', authenticateAdmin, (req, res) => {
+  req.admin.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }).catch((e) => {
+    res.status(400).send();
+  })
+})
+
+// export app for use in other modules
 module.exports = {
   app: app
 }

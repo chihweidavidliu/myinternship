@@ -19,7 +19,8 @@ $("#logOut").on("click", function(event) {
     window.location = `/`;
 
   }).catch((e) => {
-    console.log(e)
+    console.log(e);
+    alert("Logout failed, please try again later");
   })
 })
 
