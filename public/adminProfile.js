@@ -244,39 +244,30 @@ submitChoicesButton.onclick = function() {
 
 
     tableRows.forEach(row => {
-
         let company = row.firstChild.innerText.trim(); // trim the string to make sure their are no empty space characters
-
         let choicesArray = [];
-
         let choices = row.querySelectorAll("td");
-
 
         choicesArray.push(company);
 
         choices.forEach(choice => {
-
-
             choicesArray.push(choice.innerText.trim());
-
-
         })
-
         companyChoices.push(choicesArray);
-
-
-
-
     })
 
     console.log(companyChoices);
 
     let companyChoicesStringified = JSON.stringify(companyChoices);
+    let token = localStorage.getItem("admin-auth");
 
      $.ajax({
       type: "POST",
-      url: "databaseUpdater.php",
+      url: "/admin/update",
       data: {companyChoices: companyChoicesStringified},
+      beforeSend: function(request) {
+        request.setRequestHeader("admin-auth", token);
+      },
       error: function() {alert("An error occurred, please try again later")},
       success: function() {alert("Data submitted")}
 

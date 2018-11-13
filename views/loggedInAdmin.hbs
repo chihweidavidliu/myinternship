@@ -20,7 +20,11 @@
         <div id="flexbox">
             <div id="mainContainer">
                 <div id="companyChoices" class="box">
-                    <?php if($table) {echo $table;}?>
+                    {{#if table}}
+                      {{{table}}}
+                    {{else}}
+                      {{> companyChoicesBlank }}
+                    {{/if}}
                 </div>
                 <div id="studentChoices" class="box"> <?php if($studentChoicesTable) {echo $studentChoicesTable;}?></div>
             </div>

@@ -19,6 +19,10 @@ let AdminSchema = new mongoose.Schema({
       require: true,
       minlength: 6
     },
+  companyChoices: {
+      type: String,
+      require: false,
+  },
   tokens: [{
       access: {
         type: String,

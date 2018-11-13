@@ -20,10 +20,11 @@ app.use(bodyParser.json()); // use bodyParser to parse request as JSON
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) // parse req body middleware for form submission
 
 app.use(express.static(`public`)); // middleware that sets up static directory in a folder of your choice - for your pages which don't need to be loaded dynamically
-hbs.registerPartials(`${__dirname}/views/partials`) // register default partials directory
+hbs.registerPartials(`${__dirname}/../views/partials`); // register default partials directory
+
 
 app.listen(port, () => {
-  console.log(`Listening to port ${port}`)
+  console.log(`Listening to port ${port}`);
 });
 
 //homepage
@@ -61,13 +62,17 @@ app.post("/signin", urlencodedParser, (req, res) => {
 });
 
 
+app.get("/profile", (req, res) => {
+  res.redirect("/profile/:token");
+})
+
 // access profile
 app.get("/profile/:token", authenticate, (req, res, next) => {
 
     let choicesList = "";
     let choices = req.user.choices; // get user choices from req.user object (returned from authentification middleware)
 
-    if(choices != "None") { // if there are choices, turn them into list items to be passed to handlebars
+    if(choices && choices != "None") { // if there are choices, turn them into list items to be passed to handlebars
       let choicesArray = JSON.parse(choices);
       choicesArray.forEach(choice => {
         choicesList += `<li>${choice}</li>`
@@ -132,10 +137,96 @@ app.post("/admin", urlencodedParser, (req, res) => {
 // show logged in page for admin
 app.get("/admin/:token", authenticateAdmin, (req, res, next) => {
 
-    // sort out company choices and student choices grids - take data from mongodb
+    if(req.admin.companyChoices && req.admin.companyChoices.length > 0) {
+      let companyChoices = JSON.parse(req.admin.companyChoices); // don't need to parse JSOn because before saving to database was converted back to array
+      let headers = '<th scope="col">Company</th><th scope="col">Number Accepted</th>';
+      let rows = "";
+
+
+
+      companyChoices.forEach(company => {
+        rows += '<tr>';
+
+
+          company.forEach(entry => {
+            if(company.indexOf(entry) == 0) { // identify the company name (position 0 in index)
+              rows += `<th scope="row" contenteditable="true">${entry}</th>`; // give company names head value (bolded)
+            } else {
+              rows += `<td scope="col" contenteditable="true">${entry}</td>`; // give the other column entries a normal table data value (not bolded)
+            }
+          })
+
+        rows += '</tr>';
+      })
+
+      console.log(rows);
+
+      function columnCount(array) {
+               let max = 0;
+               companyChoices.forEach(company => {
+                 if(company.length > max) { max = company.length;}
+               })
+               return max;
+           }
+
+      let numberOfColumns = columnCount(companyChoices);
+
+      // add the requisite number of 'choices' column headers
+      for(let i = 1; i < (numberOfColumns -1); i++) {
+        headers += `<th scope="col" style="text-align: center">Choice ${i}</th>`;
+      }
+
+
+      let table = `<h4>Company Choices</h4>
+                  <div id="tableFlexBox">
+                      <div id="buttons">
+                          <button id="addRow">Add row</button>
+                          <button id="removeRow">Remove row</button>
+                          <button id="addColumn">Add column</button>
+                          <button id="removeColumn">Remove column</button>
+                          <button id="submitChoices">Save</button>
+                      </div>
+                      <div id = "tableDiv" style="overflow-x:scroll; overflow-y: scroll">
+                          <table class="table table-hover table-bordered table-sm" id="companyChoices">
+                            <thead>
+                              <tr id="headers">
+                                ${headers}
+                              </tr>
+                            </thead>
+                            <tbody id="tableBody2">${rows}</tbody>
+                          </table>
+                      </div>
+                  </div>`;
+
+      return res.render('loggedInAdmin.hbs', {
+        table: table,
+      })
+    }
 
     res.render('loggedInAdmin.hbs')
 })
+
+
+// update companyChoices
+app.post("/admin/update", authenticateAdmin, urlencodedParser, (req, res) => {
+
+  let companyChoices = req.body.companyChoices;
+  let admin = req.admin;
+
+  admin.companyChoices = companyChoices;
+
+  // companyChoices.forEach(choice => {
+  //   admin.companyChoices.push(choice);
+  // })
+
+  admin.save().then(() => {
+    res.status(200).send();
+  }).catch(e => {
+    res.status(400).send();
+  })
+
+});
+
 
 //admin logout
 app.delete('/admin/logout', authenticateAdmin, (req, res) => {
