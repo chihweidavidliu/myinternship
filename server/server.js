@@ -143,17 +143,11 @@ app.post("/admin", urlencodedParser, (req, res) => {
 app.get("/admin/:token", authenticateAdmin, loadCompanyChoices, loadStudentChoices, (req, res, next) => {
 
   let studentChoicesTable = req.studentChoicesTable;
-
-    if(req.companyChoicesTable) {
-      let companyChoicesTable = req.companyChoicesTable;
-      return res.render('loggedInAdmin.hbs', {
-        companyChoicesTable: companyChoicesTable,
-        studentChoicesTable: studentChoicesTable
-      })
-    }
+  let companyChoicesTable = req.companyChoicesTable;
 
     res.render('loggedInAdmin.hbs', {
-      studentChoicesTable: studentChoicesTable
+      studentChoicesTable: studentChoicesTable,
+      companyChoicesTable: companyChoicesTable,
     })
 })
 
