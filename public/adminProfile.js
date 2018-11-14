@@ -245,14 +245,6 @@ $("#sorter").click(function(event) {
   event.preventDefault();
 
   let token = localStorage.getItem("admin-auth");
+  window.location = `/admin/sorter/${token}`;
 
-  $.ajax({
-   type: "GET",
-   url: `/admin/sorter`,
-   beforeSend: function(request) {
-     request.setRequestHeader("admin-auth", token);
-   },
-   error: function() {alert("An error occurred, please try again later")},
-   success: function() {window.location = `/admin/sorter/${token}`}
-  });
 })

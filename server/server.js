@@ -169,10 +169,7 @@ app.post("/admin/update", authenticateAdmin, urlencodedParser, (req, res) => {
 });
 
 
-app.get("/admin/sorter", authenticateAdmin, (req, res) => {
-  res.status(200).send()
-})
-
+// load sorter route
 app.get("/admin/sorter/:token", authenticateAdmin, (req, res) => {
   res.render("sorter.hbs")
 })
