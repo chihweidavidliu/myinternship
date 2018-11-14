@@ -49,44 +49,25 @@ $("#logOut").click(function(event) {
 function preventDefaultEnter() {
 
     $("tr").on('keydown', function(e) {
-
         let el = event.target;
-
         if(e.keyCode == 13 /*ENTER*/) {
-
             // prevent default behaviour for enter (create new line)
             e.preventDefault();
-
-
             //defocus input
-
              el.blur();
-
         } else if(e.keyCode == 27 /*ESC*/) {
-
             // restore state
           document.execCommand('undo');
-
-
             //defocus input
           el.blur();
-
         }
-
     });
-
 }
-
 preventDefaultEnter();
 
 
-
-
 // add row functionality
-
-
 const addRowButton = document.getElementById("addRow");
-
 
 addRowButton.onclick = function() {
 
@@ -95,32 +76,19 @@ addRowButton.onclick = function() {
     const tableRows = tableBody2.querySelectorAll("tr");
     let NumberOfColumns = headers.querySelectorAll("th").length;
 
-
     let tr = document.createElement("tr");
-
     let rowContent = "";
-
     rowContent += '<th scope="row" contenteditable="true"></th>';
 
-
     for(let i = 1; i < NumberOfColumns; i++) {
-
-
         rowContent += `<td contenteditable="true"></td>`;
-
     }
 
     tr.innerHTML = rowContent;
-
     tableBody2.appendChild(tr);
-
     tr.scrollIntoView();
-
     //reinitialise preventDefaultEnter
      preventDefaultEnter();
-
-
-
 }
 
 
@@ -230,8 +198,6 @@ removeColumnButton.onclick = function() {
 
 const submitChoicesButton = document.getElementById("submitChoices");
 
-
-
 submitChoicesButton.onclick = function() {
 
     const headersList = document.getElementById("headers").querySelectorAll("th");
@@ -273,8 +239,20 @@ submitChoicesButton.onclick = function() {
 
      });
 
-
-
-
-
 }
+
+$("#sorter").click(function(event) {
+  event.preventDefault();
+
+  let token = localStorage.getItem("admin-auth");
+
+  $.ajax({
+   type: "GET",
+   url: `/admin/sorter`,
+   beforeSend: function(request) {
+     request.setRequestHeader("admin-auth", token);
+   },
+   error: function() {alert("An error occurred, please try again later")},
+   success: function() {window.location = `/admin/sorter/${token}`}
+  });
+})

@@ -72,7 +72,7 @@ app.get("/profile", (req, res) => {
 // access profile
 app.get("/profile/:token", authenticate, loadCompanyOptions, (req, res, next) => {
 
-    let companyList = req.companyList;
+    let companyList = req.companyList; // get companyList from req object as set by loadCompanyOptions middleware
     let choices = req.user.choices; // get user choices from req.user object (returned from authentification middleware)
     let choicesList = "";
 
@@ -168,6 +168,14 @@ app.post("/admin/update", authenticateAdmin, urlencodedParser, (req, res) => {
 
 });
 
+
+app.get("/admin/sorter", authenticateAdmin, (req, res) => {
+  res.status(200).send()
+})
+
+app.get("/admin/sorter/:token", authenticateAdmin, (req, res) => {
+  res.render("sorter.hbs")
+})
 
 //admin logout
 app.delete('/admin/logout', authenticateAdmin, (req, res) => {

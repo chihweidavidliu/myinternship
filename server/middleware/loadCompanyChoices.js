@@ -61,6 +61,27 @@ let loadCompanyChoices = (req, res, next) => {
 
     req.companyChoicesTable = table;
     next();
+  } else {
+    req.companyChoicesTable = `<h4>Company Choices</h4>
+                <div id="tableFlexBox">
+                    <div id="buttons">
+                        <button id="addRow">Add row</button>
+                        <button id="removeRow">Remove row</button>
+                        <button id="addColumn">Add column</button>
+                        <button id="removeColumn">Remove column</button>
+                        <button id="submitChoices">Save</button>
+                    </div>
+                    <div id = "tableDiv" style="overflow-x:scroll; overflow-y: scroll">
+                        <table class="table table-hover table-bordered table-sm" id="companyChoices">
+                          <thead>
+                            <tr id="headers">
+                              ${headers}
+                            </tr>
+                          </thead>
+                          <tbody id="tableBody2"></tbody>
+                        </table>
+                    </div>
+                </div>`;
   }
 }
 
