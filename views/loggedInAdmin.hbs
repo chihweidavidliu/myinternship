@@ -26,7 +26,13 @@
                       {{> companyChoicesBlank }}
                     {{/if}}
                 </div>
-                <div id="studentChoices" class="box"> <?php if($studentChoicesTable) {echo $studentChoicesTable;}?></div>
+                <div id="studentChoices" class="box">
+                  {{#if studentChoicesTable}}
+                    {{{studentChoicesTable}}}
+                  {{else}}
+                    {{> studentChoicesTableBlank }}
+                  {{/if}}
+              </div>
             </div>
         </div>
 

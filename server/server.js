@@ -6,6 +6,7 @@ const {Admin} = require('./models/admin');
 const {authenticate} = require('./middleware/authenticate.js');
 const {authenticateAdmin} = require('./middleware/authenticateAdmin.js');
 const {loadCompanyChoices} = require('./middleware/loadCompanyChoices.js');
+const {loadStudentChoices} = require('./middleware/loadStudentChoices.js');
 
 const hbs = require('hbs');
 const {ObjectID} = require('mongodb'); // import ObjectID from mongodb for id validation methods
@@ -112,14 +113,14 @@ app.post("/profile/:token", authenticate, urlencodedParser, (req, res) => {
   }).catch((err) => {
     res.status(400).send();
   })
-})
+});
 
 
 // admin homepage
 
 app.get("/admin", urlencodedParser, (req, res) => {
   res.render("admin.hbs");
-})
+});
 
 // admin signin
 app.post("/admin", urlencodedParser, (req, res) => {
@@ -136,18 +137,21 @@ app.post("/admin", urlencodedParser, (req, res) => {
 
 
 // show logged in page for admin
-app.get("/admin/:token", authenticateAdmin, loadCompanyChoices, (req, res, next) => {
+app.get("/admin/:token", authenticateAdmin, loadCompanyChoices, loadStudentChoices, (req, res, next) => {
 
-    if(req.table) {
-      let table = req.table;
+  let studentChoicesTable = req.studentChoicesTable;
 
+    if(req.companyChoicesTable) {
+      let companyChoicesTable = req.companyChoicesTable;
       return res.render('loggedInAdmin.hbs', {
-        table: table,
+        companyChoicesTable: companyChoicesTable,
+        studentChoicesTable: studentChoicesTable
       })
-
     }
 
-    res.render('loggedInAdmin.hbs')
+    res.render('loggedInAdmin.hbs', {
+      studentChoicesTable: studentChoicesTable
+    })
 })
 
 
@@ -158,10 +162,6 @@ app.post("/admin/update", authenticateAdmin, urlencodedParser, (req, res) => {
   let admin = req.admin;
 
   admin.companyChoices = companyChoices;
-
-  // companyChoices.forEach(choice => {
-  //   admin.companyChoices.push(choice);
-  // })
 
   admin.save().then(() => {
     res.status(200).send();

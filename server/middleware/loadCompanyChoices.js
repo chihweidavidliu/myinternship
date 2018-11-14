@@ -1,7 +1,7 @@
 
 let loadCompanyChoices = (req, res, next) => {
   if(req.admin.companyChoices && req.admin.companyChoices.length > 0) {
-    let companyChoices = JSON.parse(req.admin.companyChoices); // don't need to parse JSOn because before saving to database was converted back to array
+    let companyChoices = JSON.parse(req.admin.companyChoices);
     let headers = '<th scope="col">Company</th><th scope="col">Number Accepted</th>';
     let rows = "";
 
@@ -21,8 +21,6 @@ let loadCompanyChoices = (req, res, next) => {
 
       rows += '</tr>';
     })
-
-    console.log(rows);
 
     function columnCount(array) {
              let max = 0;
@@ -61,7 +59,7 @@ let loadCompanyChoices = (req, res, next) => {
                     </div>
                 </div>`;
 
-    req.table = table;
+    req.companyChoicesTable = table;
     next();
   }
 }
