@@ -7,6 +7,7 @@ const {authenticate} = require('./middleware/authenticate.js');
 const {authenticateAdmin} = require('./middleware/authenticateAdmin.js');
 const {loadCompanyChoices} = require('./middleware/loadCompanyChoices.js');
 const {loadStudentChoices} = require('./middleware/loadStudentChoices.js');
+const {loadCompanyOptions} = require('./middleware/loadCompanyOptions.js');
 
 const hbs = require('hbs');
 const {ObjectID} = require('mongodb'); // import ObjectID from mongodb for id validation methods
@@ -69,10 +70,11 @@ app.get("/profile", (req, res) => {
 })
 
 // access profile
-app.get("/profile/:token", authenticate, (req, res, next) => {
+app.get("/profile/:token", authenticate, loadCompanyOptions, (req, res, next) => {
 
-    let choicesList = "";
+    let companyList = req.companyList;
     let choices = req.user.choices; // get user choices from req.user object (returned from authentification middleware)
+    let choicesList = "";
 
     if(choices && choices != "None") { // if there are choices, turn them into list items to be passed to handlebars
       let choicesArray = JSON.parse(choices);
@@ -86,6 +88,7 @@ app.get("/profile/:token", authenticate, (req, res, next) => {
       department: req.user.department,
       studentid: req.user.studentid,
       choices: choicesList,
+      companyList: companyList,
     })
 
 })
