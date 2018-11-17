@@ -174,6 +174,14 @@ app.get("/admin/sorter/:token", authenticateAdmin, (req, res) => {
   res.render("sorter.hbs")
 })
 
+
+// get student data
+app.get("/admin/fetchStudents", authenticateAdmin, (req, res) => {
+  User.find({}).then(users => {
+    res.send(users);
+  })
+})
+
 //admin logout
 app.delete('/admin/logout', authenticateAdmin, (req, res) => {
   req.admin.removeToken(req.token).then(() => {

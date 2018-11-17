@@ -245,6 +245,7 @@ $("#sorter").click(function(event) {
   event.preventDefault();
 
   let token = localStorage.getItem("admin-auth");
+
   window.location = `/admin/sorter/${token}`;
 
 })
