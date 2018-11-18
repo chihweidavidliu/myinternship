@@ -249,3 +249,46 @@ $("#sorter").click(function(event) {
   window.location = `/admin/sorter/${token}`;
 
 })
+
+// parse csv functionality
+
+function parseCSV(file) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(file, {
+      error: reject,
+      complete: resolve,
+    })
+  })
+}
+
+$("#confirm").click(() => {
+  let companyChoicesFile = document.getElementById("companyChoicesInput").files[0];
+  parseCSV(companyChoicesFile).then(results => {
+    let companyChoices = [];
+    let data = results.data;
+    //push data to companyChoices, omitting the header row
+    for(let i = 1; i < data.length; i++) {
+      companyChoices.push(data[i]);
+    }
+
+    console.log(companyChoices);
+    let companyChoicesStringified = JSON.stringify(companyChoices);
+    let token = localStorage.getItem("admin-auth");
+
+    $.ajax({
+     type: "POST",
+     url: "/admin/update",
+     data: {companyChoices: companyChoicesStringified},
+     beforeSend: function(request) {
+       request.setRequestHeader("admin-auth", token);
+     },
+     error: function() {alert("An error occurred, please try again later")},
+     success: function() {
+       alert("Data submitted. Dismiss to refresh");
+       location.reload();
+     }
+
+    });
+
+  })
+})

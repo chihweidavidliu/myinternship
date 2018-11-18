@@ -45,6 +45,7 @@ let loadCompanyChoices = (req, res, next) => {
                         <button id="removeRow">Remove row</button>
                         <button id="addColumn">Add column</button>
                         <button id="removeColumn">Remove column</button>
+                        <button id="importCSV" data-toggle="modal" data-target="#modal">Import CSV</button>
                         <button id="submitChoices">Save</button>
                     </div>
                     <div id = "tableDiv" style="overflow-x:scroll; overflow-y: scroll">
@@ -69,6 +70,7 @@ let loadCompanyChoices = (req, res, next) => {
                         <button id="removeRow">Remove row</button>
                         <button id="addColumn">Add column</button>
                         <button id="removeColumn">Remove column</button>
+                        <button id="importCSV" data-toggle="modal" data-target="#modal">Import CSV</button>
                         <button id="submitChoices">Save</button>
                     </div>
                     <div id = "tableDiv" style="overflow-x:scroll; overflow-y: scroll">
