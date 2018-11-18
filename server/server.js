@@ -8,7 +8,8 @@ const {authenticateAdmin} = require('./middleware/authenticateAdmin.js');
 const {loadCompanyChoices} = require('./middleware/loadCompanyChoices.js');
 const {loadStudentChoices} = require('./middleware/loadStudentChoices.js');
 const {loadCompanyOptions} = require('./middleware/loadCompanyOptions.js');
-
+const {sorterGetStudentChoices} = require('./middleware/sorterGetStudentChoices.js');
+const {sorterGetCompanyChoices} = require('./middleware/sorterGetCompanyChoices.js');
 const hbs = require('hbs');
 const {ObjectID} = require('mongodb'); // import ObjectID from mongodb for id validation methods
 const _ = require('lodash');
@@ -175,12 +176,21 @@ app.get("/admin/sorter/:token", authenticateAdmin, (req, res) => {
 })
 
 
-// get student data
-app.get("/admin/fetchStudents", authenticateAdmin, (req, res) => {
-  User.find({}).then(users => {
-    res.send(users);
-  })
+// get student data for sorter
+app.get("/fetchSorterData", authenticateAdmin, sorterGetStudentChoices, sorterGetCompanyChoices, (req, res) => {
+
+    // get data from the req object where the middleware has stored the relevant values
+    let studentsArray = req.studentsArray;
+    let companyChoicesObject = req.companyChoicesObject;
+
+    let sorterData = {}; // combine student and company data into one data package to be sent
+    sorterData.studentsArray = studentsArray;
+    sorterData.companyChoices = companyChoicesObject;
+
+    res.send(sorterData);
 })
+
+
 
 //admin logout
 app.delete('/admin/logout', authenticateAdmin, (req, res) => {

@@ -1,3 +1,8 @@
+const consoleLog = document.getElementById("consoleLog");
+const outputLog = document.getElementById("outputLog");
+const button = document.getElementById("sort");
+const pdfButton = document.getElementById("pdf");
+const token = localStorage.getItem("admin-auth");
 
             $("#logOut").click(function(event) {
               event.preventDefault();
@@ -447,60 +452,64 @@
             let students = [];
 
 
+          // get data then initiate sort
+           $.ajax({
+                  url: '/fetchSorterData',
+                  method: 'GET',
+                  beforeSend: function(request) {
+                    request.setRequestHeader("admin-auth", token);
+                  },
+                }).then(data => {
 
-            // let fetchStudents = function() {
-            //   $.ajax({
-            //     url: '/admin/fetchStudents',
-            //     method: 'GET',
-            //     beforeSend: function(request) {
-            //       request.setRequestHeader("admin-auth", token);
-            //     },
-            //   }).then(data => {
-            //     console.log(data)
-            //   })
-            // }
+                  // put data into the studentsArray and the companyChoices array
+                  let studentsArray = data.studentsArray;
+                  let companyChoices = data.companyChoices;
+
+                  console.log(studentsArray);
+                  console.log(companyChoices)
+
+                })
 
 
-
-            // fetch students data and push to students array
-            var xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    let studentsArray = JSON.parse(this.responseText);
-                    studentsArray.forEach(student => {
-                        students.push(student);
-                    })
-                }
-            };
-            xmlhttp.open("GET", "getJSON.php", true);
-            xmlhttp.send();
-
-         // fetch companyChoices object and initiate the sorting process
-            fetch('getCompanyChoicesJSON.php')
-              .then(response => response.json())
-              .then(data => {
-                let companyChoices = data;
-                console.log(companyChoices);
-                // set up tentativeadmits with all the company names from the database
-                let tentativeAdmits = {};
-
-                for(let company in companyChoices) {
-                    tentativeAdmits[company] = [];
-                }
-                //initiate everything
-
-                let initiateAll = function() {
-                    // initiate sorting
-                    sorter(companyChoices, students, tentativeAdmits);
-
-                    // print final results to output console
-                    finalResults(students, tentativeAdmits);
-
-                    // remove click functionality to stop people sorting more than once but with the updated students array
-                    button.removeEventListener('click', initiateAll);
-                    // reveal the save output as pdf button
-                    pdfButton.style.display = "block";
-                }
-                 button.addEventListener("click", initiateAll)
-            });
+         //    // fetch students data and push to students array
+         //    var xmlhttp = new XMLHttpRequest();
+         //
+         //    xmlhttp.onreadystatechange = function() {
+         //        if (this.readyState == 4 && this.status == 200) {
+         //            let studentsArray = JSON.parse(this.responseText);
+         //            studentsArray.forEach(student => {
+         //                students.push(student);
+         //            })
+         //        }
+         //    };
+         //    xmlhttp.open("GET", "getJSON.php", true);
+         //    xmlhttp.send();
+         //
+         // // fetch companyChoices object and initiate the sorting process
+         //    fetch('getCompanyChoicesJSON.php')
+         //      .then(response => response.json())
+         //      .then(data => {
+         //        let companyChoices = data;
+         //        console.log(companyChoices);
+         //        // set up tentativeadmits with all the company names from the database
+         //        let tentativeAdmits = {};
+         //
+         //        for(let company in companyChoices) {
+         //            tentativeAdmits[company] = [];
+         //        }
+         //        //initiate everything
+         //
+         //        let initiateAll = function() {
+         //            // initiate sorting
+         //            sorter(companyChoices, students, tentativeAdmits);
+         //
+         //            // print final results to output console
+         //            finalResults(students, tentativeAdmits);
+         //
+         //            // remove click functionality to stop people sorting more than once but with the updated students array
+         //            button.removeEventListener('click', initiateAll);
+         //            // reveal the save output as pdf button
+         //            pdfButton.style.display = "block";
+         //        }
+         //         button.addEventListener("click", initiateAll)
+         //    });
