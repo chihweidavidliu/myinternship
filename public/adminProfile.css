@@ -216,3 +216,7 @@ body {
    #parse {
      margin-top: 10px;
    }
+
+   #companyChoicesInput {
+     border: none;
+   }

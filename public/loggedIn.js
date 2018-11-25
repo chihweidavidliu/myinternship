@@ -1,4 +1,7 @@
 
+function delete_cookie( name ) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
 
 //logout button
 $("#logOut").on("click", function(event) {
@@ -9,15 +12,9 @@ $("#logOut").on("click", function(event) {
   $.ajax({
     url: "/logout",
     method: 'DELETE',
-    beforeSend: function(request) {
-      request.setRequestHeader("x-auth", token);
-    },
   }).then((response, textStatus, xhr) => {
-    localStorage.removeItem('x-auth');
-    localStorage.removeItem('studentid');
-
+    delete_cookie("x-auth");
     window.location = `/`;
-
   }).catch((e) => {
     console.log(e);
     alert("Logout failed, please try again later");
@@ -129,11 +126,10 @@ $("#submit").click(function(e) {
         confirmButton.onclick = function() {
             // on confirm - push a value of 'none' to the database
 
-            let token = localStorage.getItem("x-auth")
 
              $.ajax({
               type: "POST",
-              url: `/profile/${token}`,
+              url: "/profile",
               data: { choices: "None"},
               success: function() {
 
@@ -220,11 +216,10 @@ $("#submit").click(function(e) {
         confirmButton.onclick = function() { //need to use onclick rather than jquery click to prevent multiple printing when user modifies their choice just before confirm
             // post the data to the server
 
-            let token = localStorage.getItem("x-auth")
 
              $.ajax({
               type: "POST",
-              url: `/profile/${token}`,
+              url: "/profile",
               data: { choices: choicesStringified},
               success: function() {
 
@@ -242,11 +237,7 @@ $("#submit").click(function(e) {
 
              });
 
-
-
              //print pdf
-
-
             var docDefinition = {
                 content: [
                      { text: `Internship Choices for ${name}`, style: 'header' },

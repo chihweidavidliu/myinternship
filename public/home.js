@@ -37,10 +37,10 @@ signInButton.onclick = function(event) {
       let auth = xhr.getResponseHeader('x-auth');
       let id = xhr.getResponseHeader('studentid');
 
-      localStorage.setItem('x-auth', auth);
-      localStorage.setItem('studentid', id);
+      // localStorage.setItem('x-auth', auth);
+      // localStorage.setItem('studentid', id);
 
-      window.location = `/profile/${auth}`
+      window.location = `/profile`
 
     },
     error: function (response, textStatus, xhr) {
@@ -69,15 +69,7 @@ modalConfirm.onclick = function() {
     },
     success: function (response, textStatus, xhr) {
         console.log(response);
-
-        let auth = xhr.getResponseHeader('x-auth');
-        let id = xhr.getResponseHeader('studentid');
-
-        localStorage.setItem('x-auth', auth);
-        localStorage.setItem('studentid', id);
-
-        // redirect to loggedin pages
-        window.location = `/profile/${auth}`
+        window.location = `/profile`
     },
     error: function (response, textStatus, xhr) {
       if(response.status == 400) {

@@ -1,7 +1,7 @@
 let {User} = require('./../models/user.js');
 
 let authenticate = (req, res, next) => { // authentication middleware
-  let token = req.header('x-auth') || req.params.token;
+  let token = req.header('x-auth') || req.params.token || req.cookies["x-auth"];
 
   User.findByToken(token).then((user) => {
     if(!user) {

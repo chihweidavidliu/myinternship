@@ -15,13 +15,15 @@ const {ObjectID} = require('mongodb'); // import ObjectID from mongodb for id va
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const cookieParser = require('cookie-parser');
 const port = process.env.PORT;
 
 var app = express();
 
 app.use(bodyParser.json()); // use bodyParser to parse request as JSON
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) // parse req body middleware for form submission
+
+app.use(cookieParser()); // activate cookie parser
 
 app.use(express.static(`public`)); // middleware that sets up static directory in a folder of your choice - for your pages which don't need to be loaded dynamically
 hbs.registerPartials(`${__dirname}/../views/partials`); // register default partials directory
@@ -33,6 +35,10 @@ app.listen(port, () => {
 
 //homepage
 app.get("/", (req, res) => {
+  // redirect if logged in
+  if(req.cookies["x-auth"]) {
+    return res.redirect('/profile')
+  }
   res.render("home.hbs");
 })
 
@@ -44,8 +50,7 @@ app.post("/signup", urlencodedParser, (req, res, next) => {
   user.save().then(() => {
     return user.generateAuthToken();
   }).then((token) => {
-    res.header({'x-auth': token, studentid: req.body.studentid}).send(user);
-
+    res.cookie("x-auth", token, { maxAge: 86400 }).send();
   }).catch((err) => {
     res.status(400).send(err);
   })
@@ -58,7 +63,7 @@ app.post("/signin", urlencodedParser, (req, res) => {
 
   User.findByCredentials(body.studentid, body.password).then((user) => {
     return user.generateAuthToken().then((token) => {
-      res.header({'x-auth': token, studentid: body.studentid}).send(user);
+      res.cookie("x-auth", token, { maxAge: 86400 }).send();
     })
   }).catch((e) => {
     res.status(400).send();
@@ -66,32 +71,25 @@ app.post("/signin", urlencodedParser, (req, res) => {
 });
 
 
-app.get("/profile", (req, res) => {
-  res.redirect("/profile/:token");
-})
+app.get("/profile", urlencodedParser, authenticate, loadCompanyOptions, (req, res) => {
+  let companyList = req.companyList; // get companyList from req object as set by loadCompanyOptions middleware
+  let choices = req.user.choices; // get user choices from req.user object (returned from authentification middleware)
+  let choicesList = "";
 
-// access profile
-app.get("/profile/:token", authenticate, loadCompanyOptions, (req, res, next) => {
-
-    let companyList = req.companyList; // get companyList from req object as set by loadCompanyOptions middleware
-    let choices = req.user.choices; // get user choices from req.user object (returned from authentification middleware)
-    let choicesList = "";
-
-    if(choices && choices != "None") { // if there are choices, turn them into list items to be passed to handlebars
-      let choicesArray = JSON.parse(choices);
-      choicesArray.forEach(choice => {
-        choicesList += `<li>${choice}</li>`
-      })
-    }
-
-    res.render('loggedIn.hbs', {
-      name: req.user.name,
-      department: req.user.department,
-      studentid: req.user.studentid,
-      choices: choicesList,
-      companyList: companyList,
+  if(choices && choices != "None") { // if there are choices, turn them into list items to be passed to handlebars
+    let choicesArray = JSON.parse(choices);
+    choicesArray.forEach(choice => {
+      choicesList += `<li>${choice}</li>`
     })
+  }
 
+  res.render('loggedIn.hbs', {
+    name: req.user.name,
+    department: req.user.department,
+    studentid: req.user.studentid,
+    choices: choicesList,
+    companyList: companyList,
+  })
 })
 
 // logout
@@ -105,7 +103,7 @@ app.delete('/logout', authenticate, (req, res) => {
 
 
 // save company choices
-app.post("/profile/:token", authenticate, urlencodedParser, (req, res) => {
+app.post("/profile", authenticate, urlencodedParser, (req, res) => {
   console.log(req.body.choices)
   let choices = req.body.choices;
   // save company choices
