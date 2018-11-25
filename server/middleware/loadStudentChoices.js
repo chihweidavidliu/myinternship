@@ -23,10 +23,16 @@ let studentChoicesRows = "";
   User.find({}).then(users => {
     users.forEach(user => {
 
+      let choices;
+      if(!user["choices"] || user["choices"] == "None") {
+        choices = "None";
+      } else {
+        choices = JSON.parse(user["choices"]);
+      }
       let name = user["name"];
       let studentid = user["studentid"];
       let department = user["department"];
-      let choices = JSON.parse(user["choices"]) || "None";
+
 
       studentChoicesRows += '<tr>';
       studentChoicesRows += `<th scope="row">${studentid}</th>`;
@@ -67,7 +73,7 @@ let studentChoicesRows = "";
 
     req.studentChoicesTable = studentChoicesTable;
     next();
-  })
+  }).catch((e) => console.log(e))
 }
 module.exports = {
   loadStudentChoices: loadStudentChoices

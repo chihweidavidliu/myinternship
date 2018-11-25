@@ -3,6 +3,9 @@ const companyListInput = document.getElementById("companyListInput");
 const companyList = document.getElementById("companyList");
 const companyChoices = document.getElementById("companyChoices");
 
+function delete_cookie( name ) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
 
 // toggle between student and company choices
 
@@ -24,19 +27,13 @@ const companyChoices = document.getElementById("companyChoices");
 $("#logOut").click(function(event) {
   event.preventDefault();
 
-  let token = localStorage.getItem("admin-auth");
-
   $.ajax({
     url: '/admin/logout',
     method: 'DELETE',
-    beforeSend: function(request) {
-      request.setRequestHeader("admin-auth", token);
-    },
   }).then((response) => {
-    localStorage.removeItem('admin-auth');
-    localStorage.removeItem('username');
-
-    window.location = `/admin`;
+    console.log("Success")
+    delete_cookie("admin-auth");
+    window.location = "/admin";
   }).catch((e) => {
     console.log(e);
     alert("Logout failed, please try again later");
@@ -106,20 +103,9 @@ removeRowButton.onclick = function() {
     let NumberOfRows = tableRows.length;
 
     if(NumberOfRows > 1) {
-
-
         tableBody2.removeChild(tableBody2.lastChild);
-
     }
-
 }
-
-
-
-
-
-
-
 
 // add column functionality
  const addColumnButton = document.getElementById("addColumn");
@@ -159,10 +145,7 @@ addColumnButton.onclick = function() {
 
 
 // remove column functionality
-
 const removeColumnButton = document.getElementById("removeColumn");
-
-
 
 removeColumnButton.onclick = function() {
 
@@ -177,18 +160,12 @@ removeColumnButton.onclick = function() {
 
     if(NumberOfColumns > 3) { // don't remove column if the only one remaining is the company names
 
-
         $('#headers').children().last().remove();
 
         tableRows.forEach(row => {
-
             row.removeChild(row.lastChild);
-
         })
-
     }
-
-
 }
 
 
@@ -231,24 +208,12 @@ submitChoicesButton.onclick = function() {
       type: "POST",
       url: "/admin/update",
       data: {companyChoices: companyChoicesStringified},
-      beforeSend: function(request) {
-        request.setRequestHeader("admin-auth", token);
-      },
       error: function() {alert("An error occurred, please try again later")},
       success: function() {alert("Data submitted")}
 
      });
 
 }
-
-$("#sorter").click(function(event) {
-  event.preventDefault();
-
-  let token = localStorage.getItem("admin-auth");
-
-  window.location = `/admin/sorter/${token}`;
-
-})
 
 // parse csv functionality
 
@@ -279,9 +244,6 @@ $("#confirm").click(() => {
      type: "POST",
      url: "/admin/update",
      data: {companyChoices: companyChoicesStringified},
-     beforeSend: function(request) {
-       request.setRequestHeader("admin-auth", token);
-     },
      error: function() {alert("An error occurred, please try again later")},
      success: function() {
        alert("Data submitted. Dismiss to refresh");

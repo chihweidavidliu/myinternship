@@ -39,7 +39,7 @@ let AdminSchema = new mongoose.Schema({
 AdminSchema.methods.generateAuthToken = function() { // schema.methods defines instance methods (methods applied to instances of the model)
   let admin = this;
   let access = 'auth';
-  let token = jwt.sign({_id: admin._id.toHexString(), access: access}, process.env.JWT_SECRET).toString();
+  let token = jwt.sign({_id: admin._id.toHexString(), access: access}, process.env.JWT_SECRET, { expiresIn: 86400 }).toString();
 
   admin.tokens.push({access, token});
 

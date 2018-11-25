@@ -121,6 +121,9 @@ app.post("/profile", authenticate, urlencodedParser, (req, res) => {
 // admin homepage
 
 app.get("/admin", urlencodedParser, (req, res) => {
+  if(req.cookies["admin-auth"]) {
+    return res.redirect('/admin/profile')
+  }
   res.render("admin.hbs");
 });
 
@@ -130,7 +133,7 @@ app.post("/admin", urlencodedParser, (req, res) => {
 
   Admin.findByCredentials(body.username, body.password).then((admin) => {
     return admin.generateAuthToken().then((token) => {
-      res.header({'admin-auth': token, username: body.username}).send();
+      res.cookie("admin-auth", token, { maxAge: 86400 }).send();
     })
   }).catch((e) => {
     res.status(400).send();
@@ -139,7 +142,7 @@ app.post("/admin", urlencodedParser, (req, res) => {
 
 
 // show logged in page for admin
-app.get("/admin/:token", authenticateAdmin, loadCompanyChoices, loadStudentChoices, (req, res, next) => {
+app.get("/admin/profile", authenticateAdmin, loadCompanyChoices, loadStudentChoices, (req, res, next) => {
 
   let studentChoicesTable = req.studentChoicesTable;
   let companyChoicesTable = req.companyChoicesTable;
@@ -168,7 +171,7 @@ app.post("/admin/update", authenticateAdmin, urlencodedParser, (req, res) => {
 });
 
 // load sorter route
-app.get("/admin/sorter/:token", authenticateAdmin, (req, res) => {
+app.get("/admin/sorter", authenticateAdmin, (req, res) => {
   res.render("sorter.hbs")
 })
 

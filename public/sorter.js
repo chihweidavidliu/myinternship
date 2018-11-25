@@ -2,24 +2,21 @@ const consoleLog = document.getElementById("consoleLog");
 const outputLog = document.getElementById("outputLog");
 const button = document.getElementById("sort");
 const pdfButton = document.getElementById("pdf");
-const token = localStorage.getItem("admin-auth");
+
+
+function delete_cookie( name ) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
 
 $("#logOut").click(function(event) {
   event.preventDefault();
 
-  let token = localStorage.getItem("admin-auth");
-
   $.ajax({
     url: '/admin/logout',
     method: 'DELETE',
-    beforeSend: function(request) {
-      request.setRequestHeader("admin-auth", token);
-    },
   }).then((response) => {
-    localStorage.removeItem('admin-auth');
-    localStorage.removeItem('username');
-
-    window.location = `/admin`;
+    delete_cookie("admin-auth");
+    window.location = "/admin";
   }).catch((e) => {
     console.log(e);
     alert("Logout failed, please try again later");
@@ -457,9 +454,6 @@ let students = [];
 $.ajax({
       url: '/fetchSorterData',
       method: 'GET',
-      beforeSend: function(request) {
-        request.setRequestHeader("admin-auth", token);
-      },
     }).then(data => {
 
       // put data into the studentsArray and the companyChoices array

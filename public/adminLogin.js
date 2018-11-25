@@ -13,15 +13,7 @@ $("#signInButton").click(function(event) {
     },
     success: function (response, textStatus, xhr) {
       console.log(response);
-
-      let auth = xhr.getResponseHeader('admin-auth');
-      let id = xhr.getResponseHeader('username');
-
-      localStorage.setItem('admin-auth', auth);
-      localStorage.setItem('username', id);
-
-      window.location = `/admin/${auth}`;
-
+      window.location = `/admin/profile`;
     },
     error: function (response, textStatus, xhr) {
       if(response.status == 400) {
