@@ -11,6 +11,7 @@ const {loadCompanyOptions} = require('./middleware/loadCompanyOptions.js');
 const {sorterGetStudentChoices} = require('./middleware/sorterGetStudentChoices.js');
 const {sorterGetCompanyChoices} = require('./middleware/sorterGetCompanyChoices.js');
 const {setCookieDuration} = require('./middleware/setCookieDuration.js');
+const {sendWelcomeEmail} = require('./middleware/sendWelcomeEmail.js');
 
 const hbs = require('hbs');
 const {ObjectID} = require('mongodb'); // import ObjectID from mongodb for id validation methods
@@ -18,6 +19,7 @@ const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const nodemailer = require('nodemailer');
 const port = process.env.PORT;
 
 var app = express();
@@ -55,10 +57,11 @@ app.post("/signup", urlencodedParser, setCookieDuration, (req, res, next) => {
     return user.generateAuthToken(expiry);
   }).then((token) => {
     res.cookie("x-auth", token, { maxAge: maxAge }).send();
+    next();
   }).catch((err) => {
     res.status(400).send(err);
   })
-})
+}, sendWelcomeEmail)
 
 
 // signin
