@@ -44,13 +44,23 @@ app.get("/", (req, res) => {
 
 //signup
 app.post("/signup", urlencodedParser, (req, res, next) => {
-  let body = _.pick(req.body, ['studentid', 'name', 'password', 'department']);
+  let body = _.pick(req.body, ['studentid', 'name', 'password', 'department', 'stayLoggedIn']);
   let user = new User(body);
+  let stayLoggedIn = body['stayLoggedIn'];
+  let expiry;
+  let maxAge;
+  if(stayLoggedIn == "true") {
+    expiry = "30d";
+    maxAge = (86400000 * 30);
+  } else {
+    expiry = "1d";
+    maxAge = 86400000;
+  }
 
   user.save().then(() => {
-    return user.generateAuthToken();
+    return user.generateAuthToken(expiry);
   }).then((token) => {
-    res.cookie("x-auth", token, { maxAge: 86400 }).send();
+    res.cookie("x-auth", token, { maxAge: maxAge }).send();
   }).catch((err) => {
     res.status(400).send(err);
   })
@@ -59,11 +69,19 @@ app.post("/signup", urlencodedParser, (req, res, next) => {
 
 // signin
 app.post("/signin", urlencodedParser, (req, res) => {
-  let body = _.pick(req.body, ['studentid', 'password']);
+  let body = _.pick(req.body, ['studentid', 'password', 'stayLoggedIn']);
+  let stayLoggedIn = body['stayLoggedIn'];
+  if(stayLoggedIn == "true") {
+    expiry = "30d";
+    maxAge = (86400000 * 30);
+  } else {
+    expiry = "1d";
+    maxAge = 86400000;
+  }
 
   User.findByCredentials(body.studentid, body.password).then((user) => {
-    return user.generateAuthToken().then((token) => {
-      res.cookie("x-auth", token, { maxAge: 86400 }).send();
+    return user.generateAuthToken(expiry).then(token => {
+       res.cookie("x-auth", token, { maxAge: maxAge }).send();
     })
   }).catch((e) => {
     res.status(400).send();
@@ -119,7 +137,6 @@ app.post("/profile", authenticate, urlencodedParser, (req, res) => {
 
 
 // admin homepage
-
 app.get("/admin", urlencodedParser, (req, res) => {
   if(req.cookies["admin-auth"]) {
     return res.redirect('/admin/profile')
@@ -133,6 +150,8 @@ app.post("/admin", urlencodedParser, (req, res) => {
 
   Admin.findByCredentials(body.username, body.password).then((admin) => {
     return admin.generateAuthToken().then((token) => {
+      // if admin has chosen to stay logged in, then set the cookie to something longer
+
       res.cookie("admin-auth", token, { maxAge: 86400 }).send();
     })
   }).catch((e) => {

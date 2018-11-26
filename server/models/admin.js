@@ -94,7 +94,6 @@ AdminSchema.statics.findByCredentials = function(username, password) {
     }
     return new Promise((resolve, reject) => {
       if(admin.password == password) {
-        console.log("Admin found")
         resolve(admin)
       } else {
         console.log("Password does not match")

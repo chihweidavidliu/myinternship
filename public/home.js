@@ -16,13 +16,22 @@ const modalTitle = document.getElementById("modalTitle");
 const modalConfirm = document.getElementById("confirm");
 const modalCancel = document.getElementById("cancel");
 const signInButton = document.getElementById("signInButton");
-
+const stayLoggedInSignUp = $("#stayLoggedInSignUp");
+const stayLoggedInSignIn = $("#stayLoggedInSignIn");
 
 signInButton.onclick = function(event) {
   event.preventDefault();
 
   const studentid = document.getElementById("signInId").value;
   const password = document.getElementById("signInPassword").value;
+  let stayLoggedIn = false;
+
+  if (stayLoggedInSignIn.is(':checked')) {
+    stayLoggedIn = true;
+  }
+
+  console.log(stayLoggedIn);
+
 
   $.ajax({
     url: '/signin',
@@ -30,18 +39,10 @@ signInButton.onclick = function(event) {
     data: {
       studentid: studentid,
       password: password,
+      stayLoggedIn: stayLoggedIn,
     },
     success: function (response, textStatus, xhr) {
-      console.log(response);
-
-      let auth = xhr.getResponseHeader('x-auth');
-      let id = xhr.getResponseHeader('studentid');
-
-      // localStorage.setItem('x-auth', auth);
-      // localStorage.setItem('studentid', id);
-
       window.location = `/profile`
-
     },
     error: function (response, textStatus, xhr) {
       if(response.status == 400) {
@@ -57,7 +58,12 @@ modalConfirm.onclick = function() {
     const studentid = document.getElementById("signUpId").value;
     const department = document.getElementById("department").value;
     const password = document.getElementById("signUpPassword").value;
+    let stayLoggedIn = false;
 
+    if (stayLoggedInSignUp.is(':checked')) {
+      stayLoggedIn = true;
+    }
+    
     $.ajax({
     url: '/signup',
     method: 'POST',
@@ -66,6 +72,7 @@ modalConfirm.onclick = function() {
       studentid: studentid,
       department: department,
       password: password,
+      stayLoggedIn: stayLoggedIn,
     },
     success: function (response, textStatus, xhr) {
         console.log(response);

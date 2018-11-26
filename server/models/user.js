@@ -47,10 +47,10 @@ let UserSchema = new mongoose.Schema({
 //define authentification methods
 
 // generate authentification token for a specific user
-UserSchema.methods.generateAuthToken = function() { // schema.methods defines instance methods (methods applied to instances of the model)
+UserSchema.methods.generateAuthToken = function(expiry) { // schema.methods defines instance methods (methods applied to instances of the model)
   let user = this;
   let access = 'auth';
-  let token = jwt.sign({_id: user._id.toHexString(), access: access}, process.env.JWT_SECRET, { expiresIn: 86400 }).toString();
+  let token = jwt.sign({_id: user._id.toHexString(), access: access}, process.env.JWT_SECRET, { expiresIn: expiry }).toString();
 
   user.tokens.push({access, token});
 
