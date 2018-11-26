@@ -1,8 +1,11 @@
 require('./config/config.js'); // set up environment variables and ports/databsaes
+
+// database stuff
 const {mongoose} = require('./database/mongoose.js');
 const {User} = require('./models/user');
 const {Admin} = require('./models/admin');
 
+// custom middleware
 const {authenticate} = require('./middleware/authenticate.js');
 const {authenticateAdmin} = require('./middleware/authenticateAdmin.js');
 const {loadCompanyChoices} = require('./middleware/loadCompanyChoices.js');
@@ -13,6 +16,7 @@ const {sorterGetCompanyChoices} = require('./middleware/sorterGetCompanyChoices.
 const {setCookieDuration} = require('./middleware/setCookieDuration.js');
 const {sendWelcomeEmail} = require('./middleware/sendWelcomeEmail.js');
 
+// third-party packages
 const hbs = require('hbs');
 const {ObjectID} = require('mongodb'); // import ObjectID from mongodb for id validation methods
 const _ = require('lodash');
@@ -20,15 +24,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer');
+
 const port = process.env.PORT;
 
+// express setup
 var app = express();
 
 app.use(bodyParser.json()); // use bodyParser to parse request as JSON
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) // parse req body middleware for form submission
-
 app.use(cookieParser()); // activate cookie parser
-
 app.use(express.static(`public`)); // middleware that sets up static directory in a folder of your choice - for your pages which don't need to be loaded dynamically
 hbs.registerPartials(`${__dirname}/../views/partials`); // register default partials directory
 
@@ -36,6 +40,8 @@ hbs.registerPartials(`${__dirname}/../views/partials`); // register default part
 app.listen(port, () => {
   console.log(`Listening to port ${port}`);
 });
+
+// <-------- USER ROUTES -------->
 
 //homepage
 app.get("/", (req, res) => {
@@ -61,7 +67,7 @@ app.post("/signup", urlencodedParser, setCookieDuration, (req, res, next) => {
   }).catch((err) => {
     res.status(400).send(err);
   })
-}, sendWelcomeEmail)
+}, sendWelcomeEmail) // finish with sendWelcomeEmail middleware
 
 
 // signin
@@ -126,6 +132,8 @@ app.post("/profile", authenticate, urlencodedParser, (req, res) => {
   })
 });
 
+
+// <----- ADMIN ROUTES ----->
 
 // admin homepage
 app.get("/admin", urlencodedParser, (req, res) => {
@@ -197,7 +205,6 @@ app.get("/fetchSorterData", authenticateAdmin, sorterGetStudentChoices, sorterGe
 
     res.send(sorterData);
 })
-
 
 
 //admin logout
