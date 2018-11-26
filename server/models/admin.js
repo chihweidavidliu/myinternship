@@ -36,10 +36,10 @@ let AdminSchema = new mongoose.Schema({
 })
 
 
-AdminSchema.methods.generateAuthToken = function() { // schema.methods defines instance methods (methods applied to instances of the model)
+AdminSchema.methods.generateAuthToken = function(expiry) { // schema.methods defines instance methods (methods applied to instances of the model)
   let admin = this;
   let access = 'auth';
-  let token = jwt.sign({_id: admin._id.toHexString(), access: access}, process.env.JWT_SECRET, { expiresIn: 86400 }).toString();
+  let token = jwt.sign({_id: admin._id.toHexString(), access: access}, process.env.JWT_SECRET, { expiresIn: expiry }).toString();
 
   admin.tokens.push({access, token});
 
@@ -81,10 +81,6 @@ AdminSchema.statics.findByToken = function(token) { // schema.methods defines me
 
 AdminSchema.statics.findByCredentials = function(username, password) {
   let Admin = this;
-
-  console.log(username)
-  console.log(password)
-
   return Admin.findOne({
     "username": username
   }).then((admin) => {

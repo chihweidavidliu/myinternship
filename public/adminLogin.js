@@ -3,6 +3,12 @@ $("#signInButton").click(function(event) {
 
   const username = document.getElementById("signInId").value;
   const password = document.getElementById("signInPassword").value;
+  const stayLoggedInCheck = $("#stayLoggedIn");
+
+  let stayLoggedIn = false;
+  if (stayLoggedInCheck.is(':checked')) {
+    stayLoggedIn = true;
+  }
 
   $.ajax({
     url: '/admin',
@@ -10,6 +16,7 @@ $("#signInButton").click(function(event) {
     data: {
       username: username,
       password: password,
+      stayLoggedIn: stayLoggedIn,
     },
     success: function (response, textStatus, xhr) {
       console.log(response);

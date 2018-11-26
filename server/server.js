@@ -10,6 +10,8 @@ const {loadStudentChoices} = require('./middleware/loadStudentChoices.js');
 const {loadCompanyOptions} = require('./middleware/loadCompanyOptions.js');
 const {sorterGetStudentChoices} = require('./middleware/sorterGetStudentChoices.js');
 const {sorterGetCompanyChoices} = require('./middleware/sorterGetCompanyChoices.js');
+const {setCookieDuration} = require('./middleware/setCookieDuration.js');
+
 const hbs = require('hbs');
 const {ObjectID} = require('mongodb'); // import ObjectID from mongodb for id validation methods
 const _ = require('lodash');
@@ -43,19 +45,11 @@ app.get("/", (req, res) => {
 })
 
 //signup
-app.post("/signup", urlencodedParser, (req, res, next) => {
+app.post("/signup", urlencodedParser, setCookieDuration, (req, res, next) => {
   let body = _.pick(req.body, ['studentid', 'name', 'password', 'department', 'stayLoggedIn']);
   let user = new User(body);
-  let stayLoggedIn = body['stayLoggedIn'];
-  let expiry;
-  let maxAge;
-  if(stayLoggedIn == "true") {
-    expiry = "30d";
-    maxAge = (86400000 * 30);
-  } else {
-    expiry = "1d";
-    maxAge = 86400000;
-  }
+  let expiry = req.expiry; // get expiry of token from setCookieDuration middleware
+  let maxAge = req.maxAge;
 
   user.save().then(() => {
     return user.generateAuthToken(expiry);
@@ -68,16 +62,10 @@ app.post("/signup", urlencodedParser, (req, res, next) => {
 
 
 // signin
-app.post("/signin", urlencodedParser, (req, res) => {
+app.post("/signin", urlencodedParser, setCookieDuration, (req, res) => {
   let body = _.pick(req.body, ['studentid', 'password', 'stayLoggedIn']);
-  let stayLoggedIn = body['stayLoggedIn'];
-  if(stayLoggedIn == "true") {
-    expiry = "30d";
-    maxAge = (86400000 * 30);
-  } else {
-    expiry = "1d";
-    maxAge = 86400000;
-  }
+  let expiry = req.expiry;
+  let maxAge = req.maxAge;
 
   User.findByCredentials(body.studentid, body.password).then((user) => {
     return user.generateAuthToken(expiry).then(token => {
@@ -145,14 +133,14 @@ app.get("/admin", urlencodedParser, (req, res) => {
 });
 
 // admin signin
-app.post("/admin", urlencodedParser, (req, res) => {
-  let body = _.pick(req.body, ['username', 'password']);
+app.post("/admin", urlencodedParser, setCookieDuration, (req, res) => {
+  let body = _.pick(req.body, ['username', 'password', 'stayLoggedIn']);
+  let expiry = req.expiry;
+  let maxAge = req.maxAge;
 
   Admin.findByCredentials(body.username, body.password).then((admin) => {
-    return admin.generateAuthToken().then((token) => {
-      // if admin has chosen to stay logged in, then set the cookie to something longer
-
-      res.cookie("admin-auth", token, { maxAge: 86400 }).send();
+    return admin.generateAuthToken(expiry).then((token) => {
+      res.cookie("admin-auth", token, { maxAge: maxAge }).send();
     })
   }).catch((e) => {
     res.status(400).send();
@@ -175,10 +163,8 @@ app.get("/admin/profile", authenticateAdmin, loadCompanyChoices, loadStudentChoi
 
 // update companyChoices
 app.post("/admin/update", authenticateAdmin, urlencodedParser, (req, res) => {
-
   let companyChoices = req.body.companyChoices;
   let admin = req.admin;
-
   admin.companyChoices = companyChoices;
 
   admin.save().then(() => {
