@@ -11,7 +11,12 @@ let sorterGetStudentChoices = (req, res, next) => {
       studentObject.name = student.name;
       studentObject.studentid = student.studentid;
       studentObject.department = student.department;
-      studentObject.choices = JSON.parse(student["choices"]) || "None";
+
+      if(student["choices"] == "None" || !student["choices"]) {
+        studentObject.choices = "None";
+      } else {
+        studentObject.choices = JSON.parse(student["choices"]);
+      }
 
       studentsArray.push(studentObject);
     })
